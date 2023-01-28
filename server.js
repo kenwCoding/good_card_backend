@@ -7,6 +7,7 @@ import router from './routes';
 import { corsConfig } from './utils/constants';
 
 dotenv.config();
+process.env.TZ = 'Etc/UTC';
 
 const app = express();
 
@@ -27,5 +28,6 @@ app.use(express.static('public'));
 
 const server = app.listen(3001, function () {
     const port = server.address().port
+    console.log('Server start time is:', new Date());
     console.log(`Listioning to Server http://localhost:${[port]}`)
 })

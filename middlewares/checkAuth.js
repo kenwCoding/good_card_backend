@@ -2,39 +2,64 @@ import fetch from "cross-fetch";
 
 async function checkAuth (req, res, next) {
     try {
-        const authorizationHeader = req.get('authorization')
+        const { cookies } = req
 
-        if (!authorizationHeader) {
-            throw new Error('Missing authorization header')
+        if (!cookies?.accessToken || !cookies?.refreshToken) {
+            return res.status(403).json({ message: 'Missing Refresh Token or Access Token, Please login again.'})
         }
 
-        const accessToken = authorizationHeader.split(' ')[1]
+        const { accessToken, refreshToken } = cookies
 
-        if (!accessToken) {
-            throw new Error('Missing Access Token')
-        }
-
-        const result = await fetch(`${process.env.AUTH_SERVER_BASE_URL}/auth/check`, {
+        // Auth Check with Access Token
+        const authCheckResult = await fetch(`${process.env.AUTH_SERVER_BASE_URL}/auth/check`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                accessToken: accessToken
-            }) 
+            body: JSON.stringify({ accessToken }),
+            withCredntials: true,
+            credentials: 'include'
         })
 
-        if (result.status != 200) {
-            throw new Error('Token UnAuthorised')
-        }
+        // UnAuthorised => Refresh Access Token
+        if (authCheckResult.status === 403) {
+            const refreshResult = await fetch(`${process.env.AUTH_SERVER_BASE_URL}/auth/refresh`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ refreshToken }),
+                withCredntials: true,
+                credentials: 'include'
+            })
 
-        const checkResult = await result.json()
+            if (refreshResult.status === 403) {
+                const { message } = await refreshResult.json()
+                console.log('UnAuthorised: ', message);
+                return res.status(403).json({ message }) 
+            }
+
+            const { accessToken } = await refreshResult.json()
+
+            res.cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict'
+            })
+
+            console.log('Refreshed Access Token');
+        } else if (authCheckResult.status != 200 ) {
+            const { message } = await authCheckResult.json()
+            console.log('Cehck Auth Error: ', message);
+            return res.status(400).json({ message })
+        }
 
         next()
     } catch (e) {
-        console.error(e);
-        return res.status(400).json({message: e.message})
+        console.error(e.message);
+        return res.status(400).json({message: e})
     }
 }
 

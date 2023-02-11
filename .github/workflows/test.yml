@@ -17,7 +17,7 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - name: Push to ECR
+    - name: Echo branch name
       shell: bash
       run: echo "The current branch is ${{ steps.extract_branch.outputs.branch }}."
       id: print_branch

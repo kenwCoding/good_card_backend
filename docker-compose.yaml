@@ -9,3 +9,10 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: good_card
+  auth:
+    container_name: auth
+    image: goodcardcoding/good_card_auth_stg:milestone-1.0.0
+    ports:
+      - 3002:8081
+    env_file:
+      - .env.auth.stg

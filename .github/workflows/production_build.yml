@@ -1,9 +1,9 @@
-name: Build And Push Docker Image on Staging
+name: Build And Push Docker Image on Production
 
 on:
   push:
     branches:
-      - 'milestone-**'
+      - main
   workflow_dispatch:
 
 env:
@@ -48,7 +48,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: goodcardcoding/${{ env.IMAGE_NAME }}_stg
+          images: goodcardcoding/${{ env.IMAGE_NAME }}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc

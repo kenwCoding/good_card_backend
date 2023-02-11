@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - '4-github-actions-for-cicd'
+      - 'milestone-**'
 
 jobs:
   build:
@@ -19,5 +19,5 @@ jobs:
       id: extract_branch
     - name: Push to ECR
       shell: bash
-      run: echo "${{ steps.extract_branch.outputs.branch }}"
+      run: echo "The current branch is ${{ steps.extract_branch.outputs.branch }}"
       id: print_branch

@@ -3,7 +3,6 @@ name: Test Branch Name
 on:
   push:
     branches:
-      - main
       - 'milestone-**'
 
 jobs:

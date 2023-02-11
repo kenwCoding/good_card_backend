@@ -5,6 +5,10 @@ on:
     branches:
       - 'milestone-**'
 
+env:
+  # <repo>
+  IMAGE_NAME: ${{ github.event.repository.name }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,7 +47,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: goodcardcoding/good_card_backend_stg
+          images: goodcardcoding/${{ env.IMAGE_NAME }}_stg
       
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc

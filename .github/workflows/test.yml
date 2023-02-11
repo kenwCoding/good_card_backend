@@ -1,0 +1,23 @@
+name: Test Branch Name
+
+on:
+  push:
+    branches:
+      - main
+      - 'milestone-**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+    steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    - name: Push to ECR
+      shell: bash
+      run: echo "The current branch is ${{ steps.extract_branch.outputs.branch }}"
+      id: print_branch

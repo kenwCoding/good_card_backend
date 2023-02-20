@@ -8,3 +8,10 @@ export const corsConfig = {
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     "optionsSuccessStatus": 200
 }
+
+export const invalidUserInfo = {
+  userId: '',
+  username: '',
+  role: '',
+  provider: ''
+}
